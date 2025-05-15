@@ -2,7 +2,7 @@
 # Distributed JSON-based Master-Slave Database System (Go)
 
 This project implements a distributed database system based on the Master-Slave Replication model. The system ensures data redundancy and availability through replication between a master node and a slave node. Additionally, we have developed a simple GUI to interact with the database system.
----
+----
 
 ## 📌 Features
 
@@ -22,7 +22,7 @@ o Endpoints for data insertion, update, deletion, and retrieval.
 o User-friendly interface to interact with the distributed database system.  
 o Supports data viewing and CRUD operations through a graphical interface.
 
-
+----
 
 ## 🧩 Technologies
 
