@@ -6,12 +6,18 @@ This project implements a distributed database system based on the Master-Slave 
 
 ## 📌 Features
 
-- Master-Slave architecture with replication
-- Data persistence in JSON files (`data.json`, `slave_data.json`)
-- Support for:
-  - Create database/table
-  - Insert, Update, Delete records
-  - Automatic replication to slave
+•	Master-Slave Architecture:
+o	Master Node: Handles CRUD operations and replication.
+o	Slave Node: Receives updates and stores data locally.
+•	Data Replication:
+o	Real-time replication from master to slave to ensure data availability.
+o	Supports insert, update, and delete operations.
+•	API Support:
+o	Simple RESTful API for interaction with the database.
+o	Endpoints for data insertion, update, deletion, and retrieval.
+•	GUI Interface:
+o	User-friendly interface to interact with the distributed database system.
+o	Supports data viewing and CRUD operations through a graphical interface.
 
 
 ---
