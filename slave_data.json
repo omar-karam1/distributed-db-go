@@ -1,0 +1,30 @@
+{
+  "X_db": {
+    "name": "X_db",
+    "tables": {
+      "users": {
+        "name": "users",
+        "columns": null,
+        "records": [
+          {
+            "email": "asd@example.com",
+            "id": "45",
+            "name": "asd"
+          }
+        ]
+      }
+    }
+  },
+  "slave_db": {
+    "name": "slave_db",
+    "tables": {
+      "": {
+        "name": "",
+        "columns": null,
+        "records": [
+          null
+        ]
+      }
+    }
+  }
+}

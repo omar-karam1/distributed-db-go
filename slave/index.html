@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slave Node - Distributed Database System</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --border-radius: 5px;
+            --box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        h1, h2, h3 {
+            color: var(--dark-color);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+            transition: all 0.3s;
+            margin-bottom: 5px;
+        }
+        
+        .tab:hover {
+            background-color: #ddd;
+        }
+        
+        .tab.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+            background-color: white;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        form {
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--dark-color);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            margin-right: 10px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        button.danger {
+            background-color: var(--danger-color);
+        }
+        
+        button.danger:hover {
+            background-color: #c0392b;
+        }
+        
+        button.success {
+            background-color: var(--success-color);
+        }
+        
+        button.success:hover {
+            background-color: #27ae60;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: var(--box-shadow);
+            overflow-x: auto;
+            display: block;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+            white-space: nowrap;
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        tr:hover {
+            background-color: #e9e9e9;
+        }
+        
+        .json-input {
+            font-family: monospace;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: var(--border-radius);
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .node-status {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .node {
+            padding: 15px;
+            background-color: #e7f3fe;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            min-width: 200px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .node.active {
+            background-color: #d4edda;
+        }
+        
+        .node.inactive {
+            background-color: #f8d7da;
+        }
+        
+        .node.unknown {
+            background-color: #fff3cd;
+        }
+        
+        .node-status h3 {
+            width: 100%;
+            text-align: center;
+        }
+        
+        .field-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .field-row label {
+            flex: 1;
+            margin-bottom: 0;
+            padding-right: 10px;
+        }
+        
+        .field-row input {
+            flex: 3;
+            margin-bottom: 0;
+        }
+        
+        .actions {
+            display: flex;
+            justify-content: flex-start;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+        
+        .form-section:last-child {
+            border-bottom: none;
+        }
+        
+        .replication-log {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .log-time {
+            color: #666;
+            font-size: 0.8em;
+        }
+        
+        .log-message {
+            margin-left: 10px;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-left: 10px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .btn-with-loader {
+            display: flex;
+            align-items: center;
+        }
+        
+        @media (max-width: 768px) {
+            .field-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .field-row label {
+                margin-bottom: 5px;
+                padding-right: 0;
+            }
+            
+            .field-row input {
+                width: 100%;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            button {
+                margin-right: 0;
+                margin-bottom: 10px;
+                width: 100%;
+            }
+            
+            .tab {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Slave Node - Distributed Database System</h1>
+        
+        <div class="node-status">
+            <h3>Node Status</h3>
+            <div class="node active">Slave Node: localhost:8001</div>
+            <div class="node" id="master-node">Master Node: localhost:8000</div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="openTab(event, 'data-tab')">Data View</div>
+            <div class="tab" onclick="openTab(event, 'status-tab')">Replication Status</div>
+            <div class="tab" onclick="openTab(event, 'config-tab')">Configuration</div>
+        </div>
+        
+        <!-- Data View Tab -->
+        <div id="data-tab" class="tab-content active">
+            <h2>Database Content</h2>
+            
+            <div class="form-section">
+                <h3>View Replicated Data</h3>
+                <form id="select-data-form">
+                    <div class="field-row">
+                        <label for="select-db">Database:</label>
+                        <select id="select-db" required></select>
+                    </div>
+                    
+                    <div class="field-row">
+                        <label for="select-table">Table:</label>
+                        <select id="select-table" required></select>
+                    </div>
+                    
+                    <div class="actions">
+                        <button type="submit" class="success" id="select-data-btn">View Data</button>
+                    </div>
+                </form>
+                
+                <div id="data-results" style="overflow-x: auto;">
+                    <table id="data-table">
+                        <thead>
+                            <tr>
+                                <!-- Columns will be added dynamically -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be added dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div id="data-status" class="status"></div>
+        </div>
+        
+        <!-- Replication Status Tab -->
+        <div id="status-tab" class="tab-content">
+            <h2>Replication Status</h2>
+            
+            <div class="form-section">
+                <h3>Replication Log</h3>
+                <div class="replication-log" id="replication-log">
+                    <div class="log-entry">
+                        <span class="log-time">[System]</span>
+                        <span class="log-message">Slave node initialized and ready</span>
+                    </div>
+                </div>
+                
+                <div class="actions">
+                    <button type="button" class="success" onclick="refreshReplicationStatus()">Refresh Status</button>
+                    <button type="button" class="danger" onclick="clearReplicationLog()">Clear Log</button>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3>Replication Statistics</h3>
+                <div id="replication-stats">
+                    <p>Last replication: <span id="last-replication">Never</span></p>
+                    <p>Total operations received: <span id="total-operations">0</span></p>
+                    <p>Last operation type: <span id="last-operation">None</span></p>
+                    <p>Data freshness: <span id="data-freshness">Unknown</span></p>
+                </div>
+            </div>
+            
+            <div id="status-status" class="status"></div>
+        </div>
+        
+        <!-- Configuration Tab -->
+        <div id="config-tab" class="tab-content">
+            <h2>Slave Node Configuration</h2>
+            
+            <div class="form-section">
+                <h3>Connection Settings</h3>
+                <form id="config-form">
+                    <div class="field-row">
+                        <label for="master-url">Master Node URL:</label>
+                        <input type="text" id="master-url" value="http://localhost:8000" required>
+                    </div>
+                    
+                    <div class="field-row">
+                        <label for="slave-port">Slave Port:</label>
+                        <input type="number" id="slave-port" value="8001" required>
+                    </div>
+                    
+                    <div class="field-row">
+                        <label for="sync-interval">Sync Interval (seconds):</label>
+                        <input type="number" id="sync-interval" value="30" min="5" required>
+                    </div>
+                    
+                    <div class="actions">
+                        <button type="submit" class="success">Save Configuration</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="form-section">
+                <h3>System Information</h3>
+                <div id="system-info">
+                    <p>Node ID: <span id="node-id">SLAVE-1</span></p>
+                    <p>Uptime: <span id="uptime">0 minutes</span></p>
+                    <p>Memory Usage: <span id="memory-usage">Calculating...</span></p>
+                    <p>Data Size: <span id="data-size">Calculating...</span></p>
+                </div>
+            </div>
+            
+            <div id="config-status" class="status"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Global variables
+        let databases = [];
+        let tables = [];
+        let replicationLog = [];
+        let totalOperations = 0;
+        let lastReplicationTime = null;
+        let startTime = new Date();
+        let syncInterval = null;
+        
+        // Initialize the UI
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load databases on startup
+            listDatabases();
+            
+            // Check master node status
+            checkMasterNode();
+            
+            // Set up form event listeners
+            document.getElementById('select-data-form').addEventListener('submit', selectData);
+            document.getElementById('config-form').addEventListener('submit', saveConfig);
+            
+            // Set up database select change events
+            document.getElementById('select-db').addEventListener('change', function() {
+                updateTableSelect('select-table', this.value);
+            });
+            
+            // Start uptime counter
+            updateUptime();
+            setInterval(updateUptime, 60000);
+            
+            // Start periodic sync with master
+            startSyncInterval();
+            
+            // Simulate incoming replication events for demo
+            simulateReplicationEvents();
+        });
+        
+        // Tab navigation
+        function openTab(evt, tabId) {
+            // Hide all tab contents
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+            
+            // Deactivate all tabs
+            const tabs = document.getElementsByClassName('tab');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            
+            // Activate the selected tab
+            document.getElementById(tabId).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+        
+        // Database operations
+        function listDatabases() {
+            fetch('/replicate_get?database=*')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch databases');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Extract database names from the response
+                const dbNames = Object.keys(data);
+                databases = dbNames;
+                
+                // Update database select
+                const select = document.getElementById('select-db');
+                const currentValue = select.value;
+                
+                select.innerHTML = '';
+                dbNames.forEach(db => {
+                    const option = document.createElement('option');
+                    option.value = db;
+                    option.textContent = db;
+                    select.appendChild(option);
+                });
+                
+                // Try to restore previous selection if it still exists
+                if (dbNames.includes(currentValue)) {
+                    select.value = currentValue;
+                } else if (dbNames.length > 0) {
+                    select.value = dbNames[0];
+                }
+                
+                // Update tables for the selected database
+                if (dbNames.length > 0) {
+                    updateTableSelect('select-table', select.value);
+                }
+            })
+            .catch(error => {
+                showStatus('data-status', 'Error: ' + error.message, 'error');
+            });
+        }
+        
+        function updateTableSelect(selectId, dbName) {
+            if (!dbName) return;
+            
+            fetch(`/replicate_get?database=${encodeURIComponent(dbName)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch tables');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const select = document.getElementById(selectId);
+                const currentValue = select.value;
+                
+                select.innerHTML = '';
+                const tableNames = Object.keys(data);
+                tables = tableNames;
+                
+                tableNames.forEach(table => {
+                    const option = document.createElement('option');
+                    option.value = table;
+                    option.textContent = table;
+                    select.appendChild(option);
+                });
+                
+                // Try to restore previous selection if it still exists
+                if (tableNames.includes(currentValue)) {
+                    select.value = currentValue;
+                } else if (tableNames.length > 0) {
+                    select.value = tableNames[0];
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching tables:', error);
+            });
+        }
+        
+        // Data operations
+        function selectData(e) {
+            e.preventDefault();
+            const dbName = document.getElementById('select-db').value;
+            const tableName = document.getElementById('select-table').value;
+            const btn = document.getElementById('select-data-btn');
+            
+            if (!dbName || !tableName) {
+                showStatus('data-status', 'Please select both database and table', 'error');
+                return;
+            }
+            
+            toggleLoader(btn, true);
+            
+            fetch(`/replicate_get?database=${encodeURIComponent(dbName)}&table=${encodeURIComponent(tableName)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch data');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.length === 0) {
+                    document.getElementById('data-table').innerHTML = '<p>No data found in the table.</p>';
+                    return;
+                }
+                
+                // Get column names from first record
+                const columns = Object.keys(data[0]);
+                
+                // Build table header
+                let html = '<thead><tr>';
+                columns.forEach(col => {
+                    html += `<th>${col}</th>`;
+                });
+                html += '</tr></thead><tbody>';
+                
+                // Build table rows
+                data.forEach(row => {
+                    html += '<tr>';
+                    columns.forEach(col => {
+                        html += `<td>${row[col] || ''}</td>`;
+                    });
+                    html += '</tr>';
+                });
+                html += '</tbody>';
+                
+                document.getElementById('data-table').innerHTML = html;
+            })
+            .catch(error => {
+                showStatus('data-status', 'Error: ' + error.message, 'error');
+            })
+            .finally(() => {
+                toggleLoader(btn, false);
+            });
+        }
+        
+        // Replication status functions
+        function addReplicationLog(message, type = 'info') {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            const logEntry = {
+                time: now,
+                message: message,
+                type: type
+            };
+            
+            replicationLog.push(logEntry);
+            totalOperations++;
+            lastReplicationTime = now;
+            
+            // Update UI
+            updateReplicationLogUI();
+            updateReplicationStats();
+        }
+        
+        function updateReplicationLogUI() {
+            const logContainer = document.getElementById('replication-log');
+            logContainer.innerHTML = '';
+            
+            // Show most recent entries first
+            const recentLogs = [...replicationLog].reverse().slice(0, 50);
+            
+            recentLogs.forEach(entry => {
+                const logElement = document.createElement('div');
+                logElement.className = `log-entry ${entry.type}`;
+                logElement.innerHTML = `
+                    <span class="log-time">[${entry.time.toLocaleTimeString()}]</span>
+                    <span class="log-message">${entry.message}</span>
+                `;
+                logContainer.appendChild(logElement);
+            });
+        }
+        
+        function updateReplicationStats() {
+            document.getElementById('total-operations').textContent = totalOperations;
+            
+            if (lastReplicationTime) {
+                document.getElementById('last-replication').textContent = lastReplicationTime.toLocaleString();
+                const secondsAgo = Math.floor((new Date() - lastReplicationTime) / 1000);
+                document.getElementById('data-freshness').textContent = `${secondsAgo} seconds ago`;
+            }
+            
+            if (replicationLog.length > 0) {
+                const lastEntry = replicationLog[replicationLog.length - 1];
+                document.getElementById('last-operation').textContent = lastEntry.message.split(':')[0];
+            }
+        }
+        
+        function refreshReplicationStatus() {
+            addReplicationLog('Manual refresh of replication status', 'info');
+            showStatus('status-status', 'Replication status refreshed', 'success');
+        }
+        
+        function clearReplicationLog() {
+            replicationLog = [];
+            updateReplicationLogUI();
+            showStatus('status-status', 'Replication log cleared', 'success');
+        }
+        
+        // Configuration functions
+        function saveConfig(e) {
+            e.preventDefault();
+            const masterUrl = document.getElementById('master-url').value;
+            const slavePort = document.getElementById('slave-port').value;
+            const syncInterval = document.getElementById('sync-interval').value;
+            
+            // In a real implementation, you would save this to a config file
+            // For this demo, we'll just update the UI
+            showStatus('config-status', 'Configuration saved (simulated)', 'success');
+            
+            // Restart sync interval with new settings
+            startSyncInterval();
+        }
+        
+        function startSyncInterval() {
+            // Clear existing interval if any
+            if (syncInterval) {
+                clearInterval(syncInterval);
+            }
+            
+            const interval = parseInt(document.getElementById('sync-interval').value) * 1000;
+            syncInterval = setInterval(syncWithMaster, interval);
+            
+            addReplicationLog(`Started sync interval with master (every ${interval/1000} seconds)`, 'info');
+        }
+        
+        function syncWithMaster() {
+            // In a real implementation, this would sync data with master
+            addReplicationLog('Periodic sync with master node', 'info');
+            listDatabases(); // Refresh data
+            
+            // Simulate receiving some replication events
+            if (Math.random() > 0.7) {
+                setTimeout(() => {
+                    const events = [
+                        'INSERT: Received new record for users table',
+                        'UPDATE: Updated 3 records in products table',
+                        'DELETE: Removed 2 records from orders table'
+                    ];
+                    const randomEvent = events[Math.floor(Math.random() * events.length)];
+                    addReplicationLog(randomEvent, 'success');
+                }, 1000);
+            }
+        }
+        
+        // System information functions
+        function updateUptime() {
+            const minutes = Math.floor((new Date() - startTime) / 60000);
+            document.getElementById('uptime').textContent = `${minutes} minutes`;
+        }
+        
+        function checkMasterNode() {
+            const masterUrl = document.getElementById('master-url').value;
+            
+            fetch(masterUrl)
+            .then(() => {
+                const node = document.getElementById('master-node');
+                node.classList.remove('unknown', 'inactive');
+                node.classList.add('active');
+                addReplicationLog('Master node is online', 'success');
+            })
+            .catch(() => {
+                const node = document.getElementById('master-node');
+                node.classList.remove('unknown', 'active');
+                node.classList.add('inactive');
+                addReplicationLog('Master node is offline', 'error');
+            });
+            
+            // Check every minute
+            setTimeout(checkMasterNode, 60000);
+        }
+        
+        // Helper functions
+        function showStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = 'status ' + type;
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                if (element.textContent === message) {
+                    element.textContent = '';
+                    element.className = 'status';
+                }
+            }, 5000);
+        }
+        
+        function toggleLoader(button, show) {
+            if (!button) return;
+            
+            if (show) {
+                button.disabled = true;
+                const loader = document.createElement('span');
+                loader.className = 'loading';
+                button.classList.add('btn-with-loader');
+                button.innerHTML = button.textContent;
+                button.appendChild(loader);
+            } else {
+                button.disabled = false;
+                const loader = button.querySelector('.loading');
+                if (loader) {
+                    loader.remove();
+                }
+                button.classList.remove('btn-with-loader');
+            }
+        }
+        
+        // Demo functions - simulate replication events
+        function simulateReplicationEvents() {
+            // Initial events
+            setTimeout(() => {
+                addReplicationLog('Connected to master node', 'success');
+            }, 1500);
+            
+            setTimeout(() => {
+                addReplicationLog('Received initial data snapshot', 'success');
+            }, 3000);
+            
+            // Periodic random events
+            setInterval(() => {
+                if (Math.random() > 0.5) {
+                    const events = [
+                        'INSERT: Added new user record',
+                        'UPDATE: Modified product pricing',
+                        'DELETE: Removed expired session data',
+                        'SYNC: Received batch updates from master'
+                    ];
+                    const randomEvent = events[Math.floor(Math.random() * events.length)];
+                    addReplicationLog(randomEvent, 'info');
+                }
+            }, 10000);
+        }
+    </script>
+</body>
+</html>

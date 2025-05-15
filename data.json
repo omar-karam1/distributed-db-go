@@ -1,0 +1,39 @@
+{
+  "school": {
+    "name": "school",
+    "tables": {
+      "course": {
+        "name": "course",
+        "columns": [
+          "id",
+          "name"
+        ],
+        "records": [
+          {
+            "id": "1",
+            "name": "c#"
+          },
+          {
+            "id": "2",
+            "name": "c++"
+          }
+        ]
+      },
+      "stu": {
+        "name": "stu",
+        "columns": [
+          "id",
+          "name",
+          "email"
+        ],
+        "records": [
+          {
+            "email": "john.doe@example.com",
+            "id": "1",
+            "name": "ali"
+          }
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,1463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distributed Database Management System</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --success-color: #2ecc71;
+            --danger-color: #e74c3c;
+            --warning-color: #f39c12;
+            --light-color: #ecf0f1;
+            --dark-color: #34495e;
+            --border-radius: 5px;
+            --box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        h1, h2, h3 {
+            color: var(--dark-color);
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--primary-color);
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            background-color: #ddd;
+        }
+        
+        .tab.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 5px 5px;
+            background-color: white;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        form {
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--dark-color);
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            margin-right: 10px;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+        
+        button.danger {
+            background-color: var(--danger-color);
+        }
+        
+        button.danger:hover {
+            background-color: #c0392b;
+        }
+        
+        button.success {
+            background-color: var(--success-color);
+        }
+        
+        button.success:hover {
+            background-color: #27ae60;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: var(--box-shadow);
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        
+        tr:hover {
+            background-color: #e9e9e9;
+        }
+        
+        .json-input {
+            font-family: monospace;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: var(--border-radius);
+        }
+        
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .node-status {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .node {
+            padding: 15px;
+            background-color: #e7f3fe;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            min-width: 200px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .node.active {
+            background-color: #d4edda;
+        }
+        
+        .node.inactive {
+            background-color: #f8d7da;
+        }
+        
+        .node-status h3 {
+            width: 100%;
+            text-align: center;
+        }
+        
+        .field-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .field-row label {
+            flex: 1;
+            margin-bottom: 0;
+            padding-right: 10px;
+        }
+        
+        .field-row input {
+            flex: 3;
+            margin-bottom: 0;
+        }
+        
+        .actions {
+            display: flex;
+            justify-content: flex-start;
+            margin-top: 20px;
+        }
+        
+        .form-section {
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 20px;
+        }
+        
+        .form-section:last-child {
+            border-bottom: none;
+        }
+        
+        .toggle-json {
+            background-color: var(--warning-color);
+            margin-bottom: 15px;
+        }
+        
+        .toggle-json:hover {
+            background-color: #e67e22;
+        }
+        
+        .dynamic-fields {
+            margin-bottom: 15px;
+        }
+        
+        .field-input {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .field-input input {
+            flex: 1;
+            margin-bottom: 0;
+            margin-right: 10px;
+        }
+        
+        .field-input label {
+            width: 120px;
+            margin-bottom: 0;
+        }
+        
+        .add-field-btn {
+            background-color: var(--success-color);
+            margin-bottom: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .field-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .field-row label {
+                margin-bottom: 5px;
+                padding-right: 0;
+            }
+            
+            .field-row input {
+                width: 100%;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+            
+            button {
+                margin-right: 0;
+                margin-bottom: 10px;
+                width: 100%;
+            }
+            
+            .field-input {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .field-input input {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Distributed Database Management System</h1>
+        
+        <div class="node-status">
+            <h3>Cluster Nodes Status</h3>
+            <div class="node active">Master Node: localhost:8000</div>
+            <div class="node" id="slave1">Slave Node 1: localhost:8001</div>
+            <div class="node" id="slave2">Slave Node 2: localhost:8002</div>
+        </div>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="openTab('database-tab')">Databases</div>
+            <div class="tab" onclick="openTab('table-tab')">Tables</div>
+            <div class="tab" onclick="openTab('data-tab')">Data</div>
+            <div class="tab" onclick="openTab('query-tab')">Advanced</div>
+        </div>
+        
+        <!-- Database Tab -->
+        <div id="database-tab" class="tab-content active">
+            <h2>Database Management</h2>
+            
+            <div class="form-section">
+                <h3>Create New Database</h3>
+                <form id="create-db-form">
+                    <div class="field-row">
+                        <label for="db-name">Database Name:</label>
+                        <input type="text" id="db-name" required>
+                    </div>
+                    <div class="actions">
+                        <button type="submit" class="success">Create Database</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="form-section">
+                <h3>Existing Databases</h3>
+                <button onclick="listDatabases()">Refresh List</button>
+                <div id="databases-list" style="margin-top: 15px;"></div>
+            </div>
+            
+            <div class="form-section">
+                <h3>Drop Database</h3>
+                <form id="drop-db-form">
+                    <div class="field-row">
+                        <label for="drop-db-name">Select Database:</label>
+                        <select id="drop-db-name" required></select>
+                    </div>
+                    <div class="actions">
+                        <button type="submit" class="danger">Drop Database</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div id="db-status" class="status"></div>
+        </div>
+        
+        <!-- Table Tab -->
+        <div id="table-tab" class="tab-content">
+            <h2>Table Management</h2>
+            
+            <div class="form-section">
+                <h3>Create New Table</h3>
+                <form id="create-table-form">
+                    <div class="field-row">
+                        <label for="table-db-name">Database:</label>
+                        <select id="table-db-name" required></select>
+                    </div>
+                    
+                    <div class="field-row">
+                        <label for="table-name">Table Name:</label>
+                        <input type="text" id="table-name" required>
+                    </div>
+                    
+                    <div class="field-row">
+                        <label for="table-columns">Columns (comma separated):</label>
+                        <input type="text" id="table-columns" placeholder="id,name,age,email" required>
+                    </div>
+                    
+                    <div class="actions">
+                        <button type="submit" class="success">Create Table</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="form-section">
+                <h3>Existing Tables</h3>
+                <form id="list-tables-form">
+                    <div class="field-row">
+                        <label for="list-tables-db">Select Database:</label>
+                        <select id="list-tables-db" required></select>
+                    </div>
+                    <div class="actions">
+                        <button type="button" onclick="listTables()">List Tables</button>
+                    </div>
+                </form>
+                <div id="tables-list" style="margin-top: 15px;"></div>
+            </div>
+            
+            <div class="form-section">
+                <h3>Drop Table</h3>
+                <form id="drop-table-form">
+                    <div class="field-row">
+                        <label for="drop-table-db">Database:</label>
+                        <select id="drop-table-db" required></select>
+                    </div>
+                    
+                    <div class="field-row">
+                        <label for="drop-table-name">Table Name:</label>
+                        <select id="drop-table-name" required></select>
+                    </div>
+                    
+                    <div class="actions">
+                        <button type="submit" class="danger">Drop Table</button>
+                    </div>
+                </form>
+            </div>
+            
+            <div id="table-status" class="status"></div>
+        </div>
+        
+        <!-- Data Tab -->
+        <div id="data-tab" class="tab-content">
+            <h2>Data Operations</h2>
+            
+            <div class="form-section">
+                <h3>Insert Data</h3>
+                <form id="insert-data-form">
+                    <div class="field-row">
+                        <label for="insert-db">Database:</label>
+                        <select id="insert-db" required></select>
+                    </div>
+                    
+                    <div class="field-row">
+                        <label for="insert-table">Table:</label>
+                        <select id="insert-table" required></select>
+                    </div>
+                    
+                    <div id="insert-fields-container">
+                        <p>Please select a table first to display fields</p>
+                    </div>
+                    
+                    <div class="actions">
+                        <button type="submit" class="success">Insert Data</button>
+                        <button type="button" class="toggle-json" onclick="toggleJsonInput('insert')">Switch to JSON Input</button>
+                    </div>
+                    
+                    <div id="json-insert-container" style="display: none;">
+                        <label for="insert-data-json">Or enter data as JSON:</label>
+                        <textarea id="insert-data-json" class="json-input" placeholder='{"field1": "value1", "field2": "value2"}'></textarea>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="form-section">
+                <h3>View Data</h3>
+                <form id="select-data-form">
+                    <div class="field-row">
+                        <label for="select-db">Database:</label>
+                        <select id="select-db" required></select>
+                    </div>
+                    
+                    <div class="field-row">
+                        <label for="select-table">Table:</label>
+                        <select id="select-table" required></select>
+                    </div>
+                    
+                    <div class="actions">
+                        <button type="submit" class="success">Get All Data</button>
+                    </div>
+                </form>
+                
+                <div id="data-results">
+                    <table id="data-table">
+                        <thead>
+                            <tr>
+                                <!-- Columns will be added dynamically -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Data will be added dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="form-section">
+                <h3>Update Data</h3>
+                <form id="update-data-form">
+                    <div class="field-row">
+                        <label for="update-db">Database:</label>
+                        <select id="update-db" required></select>
+                    </div>
+                    
+                    <div class="field-row">
+                        <label for="update-table">Table:</label>
+                        <select id="update-table" required></select>
+                    </div>
+                    
+                    <div id="update-conditions-container">
+                        <label>Conditions:</label>
+                        <div class="dynamic-fields" id="update-conditions-fields">
+                            <div class="field-input">
+                                <label>Field Name</label>
+                                <input type="text" placeholder="field_name">
+                                <label>Value</label>
+                                <input type="text" placeholder="value">
+                            </div>
+                        </div>
+                        <button type="button" class="add-field-btn" onclick="addConditionField('update')">Add Condition</button>
+                    </div>
+                    
+                    <div id="update-fields-container">
+                        <label>Update Values:</label>
+                        <div class="dynamic-fields" id="update-fields">
+                            <div class="field-input">
+                                <label>Field Name</label>
+                                <input type="text" placeholder="field_name">
+                                <label>New Value</label>
+                                <input type="text" placeholder="value">
+                            </div>
+                        </div>
+                        <button type="button" class="add-field-btn" onclick="addUpdateField('update')">Add Field</button>
+                    </div>
+                    
+                    <div class="actions">
+                        <button type="submit" class="success">Update Data</button>
+                        <button type="button" class="toggle-json" onclick="toggleJsonInput('update')">Switch to JSON Input</button>
+                    </div>
+                    
+                    <div id="json-update-container" style="display: none;">
+                        <label for="update-conditions-json">Conditions (JSON format):</label>
+                        <textarea id="update-conditions-json" class="json-input" placeholder='{"field1": "value1"}'></textarea>
+                        
+                        <label for="update-data-json">Update Data (JSON format):</label>
+                        <textarea id="update-data-json" class="json-input" placeholder='{"field2": "new_value"}'></textarea>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="form-section">
+                <h3>Delete Data</h3>
+                <form id="delete-data-form">
+                    <div class="field-row">
+                        <label for="delete-db">Database:</label>
+                        <select id="delete-db" required></select>
+                    </div>
+                    
+                    <div class="field-row">
+                        <label for="delete-table">Table:</label>
+                        <select id="delete-table" required></select>
+                    </div>
+                    
+                    <div id="delete-conditions-container">
+                        <label>Conditions:</label>
+                        <div class="dynamic-fields" id="delete-conditions-fields">
+                            <div class="field-input">
+                                <label>Field Name</label>
+                                <input type="text" placeholder="field_name">
+                                <label>Value</label>
+                                <input type="text" placeholder="value">
+                            </div>
+                        </div>
+                        <button type="button" class="add-field-btn" onclick="addConditionField('delete')">Add Condition</button>
+                    </div>
+                    
+                    <div class="actions">
+                        <button type="submit" class="danger">Delete Data</button>
+                        <button type="button" class="toggle-json" onclick="toggleJsonInput('delete')">Switch to JSON Input</button>
+                    </div>
+                    
+                    <div id="json-delete-container" style="display: none;">
+                        <label for="delete-conditions-json">Conditions (JSON format):</label>
+                        <textarea id="delete-conditions-json" class="json-input" placeholder='{"field1": "value1"}'></textarea>
+                    </div>
+                </form>
+            </div>
+            
+            <div id="data-status" class="status"></div>
+        </div>
+        
+        <!-- Query Tab -->
+        <div id="query-tab" class="tab-content">
+            <h2>Advanced Operations</h2>
+            
+            <div class="form-section">
+                <h3>Raw Query Execution</h3>
+                <form id="raw-query-form">
+                    <div class="field-row">
+                        <label for="query-type">Query Type:</label>
+                        <select id="query-type">
+                            <option value="create_database">Create Database</option>
+                            <option value="create_table">Create Table</option>
+                            <option value="insert">Insert Data</option>
+                            <option value="select">Select Data</option>
+                            <option value="update">Update Data</option>
+                            <option value="delete">Delete Data</option>
+                            <option value="drop_table">Drop Table</option>
+                            <option value="drop_database">Drop Database</option>
+                        </select>
+                    </div>
+                    
+                    <div class="field-row">
+                        <label for="query-data">Request Data (JSON format):</label>
+                        <textarea id="query-data" class="json-input" required></textarea>
+                    </div>
+                    
+                    <div class="actions">
+                        <button type="submit" class="success">Execute Query</button>
+                    </div>
+                </form>
+                
+                <div id="query-results">
+                    <h3>Results:</h3>
+                    <pre id="query-output"></pre>
+                </div>
+            </div>
+            
+            <div id="query-status" class="status"></div>
+        </div>
+    </div>
+    
+    <script>
+        // Global variables
+        let databases = [];
+        let tables = [];
+        let currentTableFields = [];
+        
+        // Initialize the UI
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load databases on startup
+            listDatabases();
+            
+            // Check slave nodes status
+            checkSlaveNodes();
+            
+            // Set up form event listeners
+            document.getElementById('create-db-form').addEventListener('submit', createDatabase);
+            document.getElementById('drop-db-form').addEventListener('submit', dropDatabase);
+            document.getElementById('create-table-form').addEventListener('submit', createTable);
+            document.getElementById('drop-table-form').addEventListener('submit', dropTable);
+            document.getElementById('insert-data-form').addEventListener('submit', insertData);
+            document.getElementById('select-data-form').addEventListener('submit', selectData);
+            document.getElementById('update-data-form').addEventListener('submit', updateData);
+            document.getElementById('delete-data-form').addEventListener('submit', deleteData);
+            document.getElementById('raw-query-form').addEventListener('submit', executeRawQuery);
+            
+            // Set up database select change events
+            document.getElementById('table-db-name').addEventListener('change', function() {
+                updateTableSelect('drop-table-name', this.value);
+            });
+            
+            document.getElementById('list-tables-db').addEventListener('change', function() {
+                listTables();
+            });
+            
+            document.getElementById('insert-db').addEventListener('change', function() {
+                updateTableSelect('insert-table', this.value);
+            });
+            
+            document.getElementById('select-db').addEventListener('change', function() {
+                updateTableSelect('select-table', this.value);
+            });
+            
+            document.getElementById('update-db').addEventListener('change', function() {
+                updateTableSelect('update-table', this.value);
+            });
+            
+            document.getElementById('delete-db').addEventListener('change', function() {
+                updateTableSelect('delete-table', this.value);
+            });
+            
+            document.getElementById('drop-table-db').addEventListener('change', function() {
+                updateTableSelect('drop-table-name', this.value);
+            });
+            
+            document.getElementById('insert-table').addEventListener('change', loadTableStructureForInsert);
+            
+            // Set up query type change event
+            document.getElementById('query-type').addEventListener('change', updateQueryTemplate);
+            updateQueryTemplate();
+        });
+        
+        // Tab navigation
+        function openTab(tabId) {
+            // Hide all tab contents
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+            
+            // Deactivate all tabs
+            const tabs = document.getElementsByClassName('tab');
+            for (let i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove('active');
+            }
+            
+            // Activate the selected tab
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+        
+        // Database operations
+        function createDatabase(e) {
+            e.preventDefault();
+            const dbName = document.getElementById('db-name').value;
+            
+            fetch('/create_database', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    database: dbName
+                })
+            })
+            .then(response => response.text())
+            .then(data => {
+                showStatus('db-status', data, 'success');
+                listDatabases();
+                document.getElementById('db-name').value = '';
+            })
+            .catch(error => {
+                showStatus('db-status', 'Error: ' + error, 'error');
+            });
+        }
+        
+        function listDatabases() {
+            fetch('/list_databases')
+            .then(response => response.json())
+            .then(data => {
+                databases = data;
+                const dbList = document.getElementById('databases-list');
+                dbList.innerHTML = '<ul>' + data.map(db => `<li>${db}</li>`).join('') + '</ul>';
+                
+                // Update all database select elements
+                updateDatabaseSelects();
+            })
+            .catch(error => {
+                showStatus('db-status', 'Error: ' + error, 'error');
+            });
+        }
+        
+        function dropDatabase(e) {
+            e.preventDefault();
+            const dbName = document.getElementById('drop-db-name').value;
+            
+            if (!confirm(`Are you sure you want to drop database '${dbName}'? This cannot be undone.`)) {
+                return;
+            }
+            
+            fetch('/drop_database', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    database: dbName
+                })
+            })
+            .then(response => response.text())
+            .then(data => {
+                showStatus('db-status', data, 'success');
+                listDatabases();
+            })
+            .catch(error => {
+                showStatus('db-status', 'Error: ' + error, 'error');
+            });
+        }
+        
+        // Table operations
+        function createTable(e) {
+            e.preventDefault();
+            const dbName = document.getElementById('table-db-name').value;
+            const tableName = document.getElementById('table-name').value;
+            const columns = document.getElementById('table-columns').value.split(',').map(col => col.trim());
+            
+            fetch('/create_table', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    database: dbName,
+                    table: tableName,
+                    columns: columns
+                })
+            })
+            .then(response => response.text())
+            .then(data => {
+                showStatus('table-status', data, 'success');
+                listTables();
+                document.getElementById('table-name').value = '';
+                document.getElementById('table-columns').value = '';
+            })
+            .catch(error => {
+                showStatus('table-status', 'Error: ' + error, 'error');
+            });
+        }
+        
+        function listTables() {
+            const dbName = document.getElementById('list-tables-db').value;
+            
+            fetch(`/list_tables?database=${dbName}`)
+            .then(response => response.json())
+            .then(data => {
+                tables = data;
+                const tablesList = document.getElementById('tables-list');
+                tablesList.innerHTML = '<ul>' + data.map(table => `<li>${table}</li>`).join('') + '</ul>';
+            })
+            .catch(error => {
+                showStatus('table-status', 'Error: ' + error, 'error');
+            });
+        }
+        
+        function dropTable(e) {
+            e.preventDefault();
+            const dbName = document.getElementById('drop-table-db').value;
+            const tableName = document.getElementById('drop-table-name').value;
+            
+            if (!confirm(`Are you sure you want to drop table '${tableName}' from database '${dbName}'? This cannot be undone.`)) {
+                return;
+            }
+            
+            fetch('/drop_table', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    database: dbName,
+                    table: tableName
+                })
+            })
+            .then(response => response.text())
+            .then(data => {
+                showStatus('table-status', data, 'success');
+                listTables();
+            })
+            .catch(error => {
+                showStatus('table-status', 'Error: ' + error, 'error');
+            });
+        }
+        
+        // Data operations
+        function insertData(e) {
+            e.preventDefault();
+            const dbName = document.getElementById('insert-db').value;
+            const tableName = document.getElementById('insert-table').value;
+            let record = {};
+            
+            // Check if we're using JSON input
+            const jsonContainer = document.getElementById('json-insert-container');
+            if (jsonContainer.style.display !== 'none') {
+                try {
+                    record = JSON.parse(document.getElementById('insert-data-json').value);
+                } catch (error) {
+                    showStatus('data-status', 'Invalid JSON: ' + error, 'error');
+                    return;
+                }
+            } else {
+    // Get data from dynamic fields
+    const fieldInputs = document.querySelectorAll('#insert-fields-container .field-input');
+    fieldInputs.forEach(field => {
+        // نبحث عن input الذي ليس لديه placeholder "field_name"
+        const valueInput = field.querySelector('input:not([placeholder="field_name"])');
+        const columnName = field.querySelector('label') ? field.querySelector('label').textContent : 
+                         field.querySelector('input[placeholder="field_name"]')?.value;
+        
+        if (columnName && valueInput && valueInput.value) {
+            record[columnName] = valueInput.value;
+        }
+    });
+    
+    if (Object.keys(record).length === 0) {
+        showStatus('data-status', 'Please enter at least one field', 'error');
+        return;
+    }
+}
+            
+            fetch('/insert', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    database: dbName,
+                    table: tableName,
+                    record: record
+                })
+            })
+            .then(response => response.text())
+            .then(data => {
+                showStatus('data-status', data, 'success');
+                // Clear inputs
+                if (jsonContainer.style.display !== 'none') {
+                    document.getElementById('insert-data-json').value = '';
+                } else {
+                    const fieldInputs = document.querySelectorAll('#insert-fields-container input');
+                    fieldInputs.forEach(input => {
+                        input.value = '';
+                    });
+                }
+            })
+            .catch(error => {
+                showStatus('data-status', 'Error: ' + error, 'error');
+            });
+        }
+        
+        function selectData(e) {
+            e.preventDefault();
+            const dbName = document.getElementById('select-db').value;
+            const tableName = document.getElementById('select-table').value;
+            
+            fetch(`/select?database=${dbName}&table=${tableName}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length === 0) {
+                    document.getElementById('data-table').innerHTML = '<p>No data found in the table.</p>';
+                    return;
+                }
+                
+                // Get column names from first record
+                const columns = Object.keys(data[0]);
+                
+                // Build table header
+                let html = '<thead><tr>';
+                columns.forEach(col => {
+                    html += `<th>${col}</th>`;
+                });
+                html += '</tr></thead><tbody>';
+                
+                // Build table rows
+                data.forEach(row => {
+                    html += '<tr>';
+                    columns.forEach(col => {
+                        html += `<td>${row[col] || ''}</td>`;
+                    });
+                    html += '</tr>';
+                });
+                html += '</tbody>';
+                
+                document.getElementById('data-table').innerHTML = html;
+            })
+            .catch(error => {
+                showStatus('data-status', 'Error: ' + error, 'error');
+            });
+        }
+        
+        function updateData(e) {
+            e.preventDefault();
+            const dbName = document.getElementById('update-db').value;
+            const tableName = document.getElementById('update-table').value;
+            let conditions = {};
+            let updateData = {};
+            
+            // Check if we're using JSON input
+            const jsonContainer = document.getElementById('json-update-container');
+            if (jsonContainer.style.display !== 'none') {
+                try {
+                    conditions = JSON.parse(document.getElementById('update-conditions-json').value);
+                    updateData = JSON.parse(document.getElementById('update-data-json').value);
+                } catch (error) {
+                    showStatus('data-status', 'Invalid JSON: ' + error, 'error');
+                    return;
+                }
+            } else {
+                // Get conditions from dynamic fields
+                const conditionInputs = document.querySelectorAll('#update-conditions-fields .field-input');
+                conditionInputs.forEach(field => {
+                    const nameInput = field.querySelector('input[placeholder="field_name"]');
+                    const valueInput = field.querySelector('input[placeholder="value"]');
+                    if (nameInput && nameInput.value && valueInput) {
+                        conditions[nameInput.value] = valueInput.value;
+                    }
+                });
+                
+                // Get update data from dynamic fields
+                const updateInputs = document.querySelectorAll('#update-fields .field-input');
+                updateInputs.forEach(field => {
+                    const nameInput = field.querySelector('input[placeholder="field_name"]');
+                    const valueInput = field.querySelector('input[placeholder="value"]');
+                    if (nameInput && nameInput.value && valueInput) {
+                        updateData[nameInput.value] = valueInput.value;
+                    }
+                });
+                
+                if (Object.keys(conditions).length === 0 || Object.keys(updateData).length === 0) {
+                    showStatus('data-status', 'Please enter at least one condition and one update field', 'error');
+                    return;
+                }
+            }
+            
+            fetch('/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    database: dbName,
+                    table: tableName,
+                    conditions: conditions,
+                    update_data: updateData
+                })
+            })
+            .then(response => response.text())
+            .then(data => {
+                showStatus('data-status', data, 'success');
+                // Clear inputs
+                if (jsonContainer.style.display !== 'none') {
+                    document.getElementById('update-conditions-json').value = '';
+                    document.getElementById('update-data-json').value = '';
+                } else {
+                    const inputs = document.querySelectorAll('#update-conditions-fields input, #update-fields input');
+                    inputs.forEach(input => {
+                        input.value = '';
+                    });
+                }
+            })
+            .catch(error => {
+                showStatus('data-status', 'Error: ' + error, 'error');
+            });
+        }
+        
+        function deleteData(e) {
+            e.preventDefault();
+            const dbName = document.getElementById('delete-db').value;
+            const tableName = document.getElementById('delete-table').value;
+            let conditions = {};
+            
+            // Check if we're using JSON input
+            const jsonContainer = document.getElementById('json-delete-container');
+            if (jsonContainer.style.display !== 'none') {
+                try {
+                    conditions = JSON.parse(document.getElementById('delete-conditions-json').value);
+                } catch (error) {
+                    showStatus('data-status', 'Invalid JSON: ' + error, 'error');
+                    return;
+                }
+            } else {
+                // Get conditions from dynamic fields
+                const conditionInputs = document.querySelectorAll('#delete-conditions-fields .field-input');
+                conditionInputs.forEach(field => {
+                    const nameInput = field.querySelector('input[placeholder="field_name"]');
+                    const valueInput = field.querySelector('input[placeholder="value"]');
+                    if (nameInput && nameInput.value && valueInput) {
+                        conditions[nameInput.value] = valueInput.value;
+                    }
+                });
+                
+                if (Object.keys(conditions).length === 0) {
+                    showStatus('data-status', 'Please enter at least one condition', 'error');
+                    return;
+                }
+            }
+            
+            if (!confirm('Are you sure you want to delete these records? This cannot be undone.')) {
+                return;
+            }
+            
+            fetch('/delete', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    database: dbName,
+                    table: tableName,
+                    conditions: conditions
+                })
+            })
+            .then(response => response.text())
+            .then(data => {
+                showStatus('data-status', data, 'success');
+                // Clear inputs
+                if (jsonContainer.style.display !== 'none') {
+                    document.getElementById('delete-conditions-json').value = '';
+                } else {
+                    const inputs = document.querySelectorAll('#delete-conditions-fields input');
+                    inputs.forEach(input => {
+                        input.value = '';
+                    });
+                }
+            })
+            .catch(error => {
+                showStatus('data-status', 'Error: ' + error, 'error');
+            });
+        }
+        
+        // Raw query execution
+        function executeRawQuery(e) {
+    e.preventDefault();
+    const queryType = document.getElementById('query-type').value;
+    let queryData;
+    
+    try {
+        queryData = JSON.parse(document.getElementById('query-data').value);
+    } catch (error) {
+        showStatus('query-status', 'Invalid JSON: ' + error, 'error');
+        return;
+    }
+    
+    let url = `/${queryType}`;
+    let options = {
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    };
+
+    if (queryType === 'select') {
+        // Handle SELECT as GET request with query parameters
+        const params = new URLSearchParams();
+        if (queryData.database) params.append('database', queryData.database);
+        if (queryData.table) params.append('table', queryData.table);
+        url += `?${params.toString()}`;
+        options.method = 'GET';
+    } else {
+        // Handle other queries as POST requests
+        options.method = 'POST';
+        options.body = JSON.stringify(queryData);
+    }
+    
+    fetch(url, options)
+    .then(response => {
+        // First check if the response is JSON
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            return response.json();
+        }
+        return response.text(); // Fallback to text if not JSON
+    })
+    .then(data => {
+        if (typeof data === 'object') {
+            document.getElementById('query-output').textContent = JSON.stringify(data, null, 2);
+        } else {
+            document.getElementById('query-output').textContent = data;
+        }
+        showStatus('query-status', 'Query executed successfully', 'success');
+        
+        // Refresh lists if needed
+        if (['create_database', 'drop_database'].includes(queryType)) {
+            listDatabases();
+        } else if (['create_table', 'drop_table'].includes(queryType)) {
+            listTables();
+        }
+    })
+    .catch(error => {
+        document.getElementById('query-output').textContent = 'Error: ' + error.message;
+        showStatus('query-status', 'Error: ' + error.message, 'error');
+    });
+}
+        
+        // Helper functions
+        function updateDatabaseSelects() {
+            const selects = [
+                'table-db-name', 'list-tables-db', 'insert-db', 'select-db', 
+                'update-db', 'delete-db', 'drop-table-db', 'drop-db-name'
+            ];
+            
+            selects.forEach(selectId => {
+                const select = document.getElementById(selectId);
+                const currentValue = select.value;
+                
+                select.innerHTML = '';
+                databases.forEach(db => {
+                    const option = document.createElement('option');
+                    option.value = db;
+                    option.textContent = db;
+                    select.appendChild(option);
+                });
+                
+                // Try to restore previous selection if it still exists
+                if (databases.includes(currentValue)) {
+                    select.value = currentValue;
+                } else if (databases.length > 0) {
+                    select.value = databases[0];
+                }
+            });
+        }
+        
+        function updateTableSelect(selectId, dbName) {
+            if (!dbName) return;
+            
+            fetch(`/list_tables?database=${dbName}`)
+            .then(response => response.json())
+            .then(data => {
+                const select = document.getElementById(selectId);
+                const currentValue = select.value;
+                
+                select.innerHTML = '';
+                data.forEach(table => {
+                    const option = document.createElement('option');
+                    option.value = table;
+                    option.textContent = table;
+                    select.appendChild(option);
+                });
+                
+                // Try to restore previous selection if it still exists
+                if (data.includes(currentValue)) {
+                    select.value = currentValue;
+                } else if (data.length > 0) {
+                    select.value = data[0];
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching tables:', error);
+            });
+        }
+        
+        function loadTableStructureForInsert() {
+            const dbName = document.getElementById('insert-db').value;
+            const tableName = document.getElementById('insert-table').value;
+            
+            if (!dbName || !tableName) {
+                document.getElementById('insert-fields-container').innerHTML = 
+                    '<p>Please select both a database and table</p>';
+                return;
+            }
+            
+            // First try to get the table structure from the describe endpoint
+            fetch(`/describe_table?database=${dbName}&table=${tableName}`)
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to fetch table structure');
+                return response.json();
+            })
+            .then(data => {
+                const container = document.getElementById('insert-fields-container');
+                container.innerHTML = '';
+                
+                if (data.columns && data.columns.length > 0) {
+                    // Create input fields for each column
+                    currentTableFields = data.columns;
+                    createInputFields(data.columns, container);
+                } else {
+                    // If no columns found, try to get from sample data
+                    fetchSampleDataForStructure(dbName, tableName);
+                }
+            })
+            .catch(error => {
+                console.error('Error loading table structure:', error);
+                fetchSampleDataForStructure(dbName, tableName);
+            });
+        }
+
+        function fetchSampleDataForStructure(dbName, tableName) {
+            // Fallback to getting structure from sample data
+            fetch(`/select?database=${dbName}&table=${tableName}&limit=1`)
+            .then(response => response.json())
+            .then(data => {
+                const container = document.getElementById('insert-fields-container');
+                container.innerHTML = '';
+                
+                if (data.length > 0) {
+                    // Create input fields from the first record's keys
+                    const columns = Object.keys(data[0]);
+                    currentTableFields = columns;
+                    createInputFields(columns, container);
+                } else {
+                    // If table is empty, show manual field entry
+                    container.innerHTML = `
+                        <div class="dynamic-fields" id="insert-fields">
+                            <div class="field-input">
+                                <input type="text" placeholder="field_name">
+                                <input type="text" placeholder="value">
+                            </div>
+                        </div>
+                        <button type="button" class="add-field-btn" onclick="addInsertField()">Add Field</button>
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching sample data:', error);
+                document.getElementById('insert-fields-container').innerHTML = 
+                    '<p class="error">Error loading table structure. Please use JSON input.</p>';
+            });
+        }
+
+       function createInputFields(columns, container) {
+    container.innerHTML = '';
+    
+    columns.forEach(column => {
+        const fieldDiv = document.createElement('div');
+        fieldDiv.className = 'field-input';
+        fieldDiv.innerHTML = `
+            <label>${column}</label>
+            <input type="text" placeholder="Enter value for ${column}" data-column="${column}">
+        `;
+        container.appendChild(fieldDiv);
+    });
+    
+    // Add button to add additional fields
+    const addButton = document.createElement('button');
+    addButton.type = 'button';
+    addButton.className = 'add-field-btn';
+    addButton.textContent = 'Add Additional Field';
+    addButton.onclick = function() {
+        const fieldDiv = document.createElement('div');
+        fieldDiv.className = 'field-input';
+        fieldDiv.innerHTML = `
+            <input type="text" placeholder="field_name">
+            <input type="text" placeholder="value">
+        `;
+        container.insertBefore(fieldDiv, container.lastChild);
+    };
+    container.appendChild(addButton);
+}
+
+        function addInsertField() {
+            const container = document.getElementById('insert-fields-container');
+            const fieldDiv = document.createElement('div');
+            fieldDiv.className = 'field-input';
+            fieldDiv.innerHTML = `
+                <input type="text" placeholder="field_name">
+                <input type="text" placeholder="value">
+            `;
+            container.insertBefore(fieldDiv, container.lastChild); // Insert before the add button
+        }
+        
+        function addConditionField(type) {
+            const container = document.getElementById(`${type}-conditions-fields`);
+            const newField = document.createElement('div');
+            newField.className = 'field-input';
+            newField.innerHTML = `
+                <input type="text" placeholder="field_name">
+                <input type="text" placeholder="value">
+            `;
+            container.appendChild(newField);
+        }
+        
+        function addUpdateField(type) {
+            const container = document.getElementById(`${type}-fields`);
+            const newField = document.createElement('div');
+            newField.className = 'field-input';
+            newField.innerHTML = `
+                <input type="text" placeholder="field_name">
+                <input type="text" placeholder="value">
+            `;
+            container.appendChild(newField);
+        }
+        
+        function toggleJsonInput(type) {
+            const jsonContainer = document.getElementById(`json-${type}-container`);
+            const fieldsContainer = document.getElementById(`${type}-fields-container`) || 
+                                  document.getElementById(`${type}-conditions-container`) || 
+                                  document.getElementById('insert-fields-container');
+            
+            if (jsonContainer.style.display === 'none') {
+                jsonContainer.style.display = 'block';
+                if (fieldsContainer) fieldsContainer.style.display = 'none';
+                event.target.textContent = 'Switch to Form Input';
+            } else {
+                jsonContainer.style.display = 'none';
+                if (fieldsContainer) fieldsContainer.style.display = 'block';
+                event.target.textContent = 'Switch to JSON Input';
+            }
+        }
+        
+        function updateQueryTemplate() {
+            const queryType = document.getElementById('query-type').value;
+            let template = '';
+            
+            switch(queryType) {
+                case 'create_database':
+                    template = '{\n  "database": "database_name"\n}';
+                    break;
+                case 'create_table':
+                    template = '{\n  "database": "database_name",\n  "table": "table_name",\n  "columns": ["col1", "col2", "col3"]\n}';
+                    break;
+                case 'insert':
+                    template = '{\n  "database": "database_name",\n  "table": "table_name",\n  "record": {\n    "col1": "value1",\n    "col2": "value2"\n  }\n}';
+                    break;
+                case 'select':
+                    template = '{\n  "database": "database_name",\n  "table": "table_name"\n}';
+                    break;
+                case 'update':
+                    template = '{\n  "database": "database_name",\n  "table": "table_name",\n  "conditions": {\n    "col1": "value1"\n  },\n  "update_data": {\n    "col2": "new_value"\n  }\n}';
+                    break;
+                case 'delete':
+                    template = '{\n  "database": "database_name",\n  "table": "table_name",\n  "conditions": {\n    "col1": "value1"\n  }\n}';
+                    break;
+                case 'drop_table':
+                    template = '{\n  "database": "database_name",\n  "table": "table_name"\n}';
+                    break;
+                case 'drop_database':
+                    template = '{\n  "database": "database_name"\n}';
+                    break;
+            }
+            
+            document.getElementById('query-data').value = template;
+        }
+        
+        function showStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = 'status ' + type;
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                element.textContent = '';
+                element.className = 'status';
+            }, 5000);
+        }
+        
+        function checkSlaveNodes() {
+            const slaves = [
+                { id: 'slave1', url: 'http://localhost:8001' },
+                { id: 'slave2', url: 'http://localhost:8002' }
+            ];
+            
+            slaves.forEach(slave => {
+                fetch(slave.url)
+                .then(() => {
+                    document.getElementById(slave.id).classList.add('active');
+                })
+                .catch(() => {
+                    document.getElementById(slave.id).classList.add('inactive');
+                });
+            });
+            
+            // Check every 30 seconds
+            setTimeout(checkSlaveNodes, 30000);
+        }
+    </script>
+</body>
+</html>
